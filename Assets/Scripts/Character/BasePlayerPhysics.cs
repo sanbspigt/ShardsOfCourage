@@ -7,6 +7,39 @@ namespace ShardsOfCourage.Character
 {
     public class BasePlayerPhysics : MonoBehaviour, IPhysicsInfluence
     {
+        public enum PhysicsState {
+            OnNormal,
+            OnWater            
+        }
+
+        [System.Serializable]
+        public struct Collisions
+        {
+            public bool isGrounded;
+            public bool isGroundedPrev;
+            public bool isLeftBlocked;
+            public bool isRightBlocked;
+            public bool isTouchLeft;
+            public bool isTouchRight;
+            public bool isTouchWall;
+            public bool isTouchWallPrev;
+            public bool isTouchTop;
+            public bool isOnSlope;
+            public bool isOnMaxSlope;
+            public bool isInsidePlatform;
+            public bool isInWater;
+            public float slopeAngle;
+            public float errorAngle;
+            public float coyoteTime;
+            public float jumpPressTime;
+            public float groundedTime;
+
+            public void Reset()
+            {
+                isGrounded = false;
+            }
+        }
+
         public void Init(Transform body)
         { 
             //Initializing player size,sensor sizes,offset vaules, check if squeezes are possible

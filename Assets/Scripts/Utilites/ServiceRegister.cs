@@ -4,15 +4,10 @@ using UnityEngine;
 
 public class ServiceRegister : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public MonoBehaviour service;
 
-    // Update is called once per frame
-    void Update()
+    private void Awake()
     {
-        
+        ServiceLocator.Register(service);
     }
 }
