@@ -66,5 +66,10 @@ public static class ExtensionMethods
         return RadiansToVector2(angleInD * Mathf.Deg2Rad);
     }
 
-
+    public static float Vector2ToDegrees(Vector2 dir)
+    {
+        dir.Normalize();
+        return Mathf.Atan2(dir.y, dir.x)*Mathf.Rad2Deg;
+    }
+        
 }

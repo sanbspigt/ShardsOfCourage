@@ -37,12 +37,91 @@ namespace ShardsOfCourage.Character
             public void Reset()
             {
                 isGrounded = false;
+                isLeftBlocked = false;
+                isRightBlocked = false;
+                isTouchLeft = false;
+                isTouchRight = false;
+                isTouchWall = false;
+                isTouchTop = false;
+                isOnSlope = false;
+                isOnMaxSlope = false;
+                slopeAngle = 0f;
+                errorAngle = 0f;
             }
         }
 
+        [Header("Properties")]
+        [SerializeField]
+        private Vector2 charSize;
+        [SerializeField]
+        private Vector2 sensorSize;
+        [SerializeField]
+        private float widthOfSkin;
+        [SerializeField]
+        private int sensorCount;
+        [SerializeField]
+        private float minSensorLength;
+        [SerializeField]
+        private LayerMask physicInteract;
+
+        [Header("Slope Properties")]
+        [SerializeField]
+        private float maxSlopeAngle;
+
+        [Header("Physics Info")]
+        public Collisions collisions;
+        public Vector2 velocity;
+        public Vector2 influenceVelocity;
+
+        [SerializeField]
+        private float gravity;
+        [SerializeField]
+        private float gravityDownMultiplier;
+        [SerializeField]
+        private float maxGravity;
+
+        //Raycast holders
+        private RaycastHit2D[] verticalCasts;
+        private RaycastHit2D[] horizontalCasts;
+        private RaycastHit2D hitSide;
+        //--------------------------------
+
+        private Transform body;
+        private float offsetAngle;
+        private float lengthCharSize;
+        private float charSensorSize;
+
+        private float lengthSensorSize;
+
+        private Vector2 lastPosition;
+        private Vector2 lastDirection;
+
+        private Vector2 halfCharSize => charSize * 0.5f;
+        private Vector2 halfCharSizeDir =>
+            halfCharSize * ExtensionMethods.DegreesToVector2(0f-Mathf.Abs(collisions.slopeAngle))+
+           halfCharSize * ExtensionMethods.DegreesToVector2(0f - Mathf.Abs(collisions.slopeAngle)+90f);
+
+        private Vector2 halfSensorSize => sensorSize * 0.5f;
+
+        public Vector2 CharSize => charSize;
+
+        /// <summary>
+        /// Initializing player size,sensor sizes,offset vaules, check if squeezes are possible
+        /// </summary>
+        /// <param name="body"></param>
         public void Init(Transform body)
-        { 
-            //Initializing player size,sensor sizes,offset vaules, check if squeezes are possible
+        {
+            this.body = body;
+            offsetAngle = ExtensionMethods.Vector2ToDegrees(halfCharSize);
+            lengthCharSize = halfCharSize.magnitude - widthOfSkin;
+            lengthSensorSize = halfSensorSize.magnitude;
+
+            horizontalCasts = new RaycastHit2D[sensorCount];
+            verticalCasts = new RaycastHit2D[sensorCount];
+
+            lastPosition = body.position;
+
+            collisions.isInsidePlatform = false;
         }
 
         public void PreUpdate()
@@ -100,19 +179,37 @@ namespace ShardsOfCourage.Character
         
         }
 
-        public void OnGravityUpdate()
+        public void OnGravityUpdate(PhysicsState state)
+        {
+            switch (state)
+            {
+                case PhysicsState.OnNormal:
+                    UpdateGravityOnNormal();
+                    break;
+                case PhysicsState.OnWater:
+                    UpdateGravityOnWater();
+                    break;
+            }
+        }
+
+        private void UpdateGravityOnNormal()
+        {
+
+        }
+
+        private void UpdateGravityOnWater()
         { 
         
         }
 
         public void ForceMovePoint(Vector2 dirOfMovement)
         {
-            throw new System.NotImplementedException();
+            body.position = body.position.ToVector2() + dirOfMovement;
         }
 
         public void GiveMomentumVelocity(Vector2 velocity)
         {
-            throw new System.NotImplementedException();
+            influenceVelocity = velocity;
         }
     }
 }
